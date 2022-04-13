@@ -1,19 +1,40 @@
 const express = require('express');
 const router = express.Router();
-// const UserModel= require("../models/userModel.js")
-const UserController= require("../controllers/userController")
-const BookController= require("../controllers/bookController")
+  const BookModel = require("../models/bookModel")
+//const BookController= require("../controllers/bookController")
 
-router.get("/test-me", function (req, res) {
-    res.send("My first ever api!")
+router.post("/createBook", async function(req, res){
+    let data = req.body
+    let savedData = await BookModel.create(data)
+    res.send({msg: savedData})
 })
 
-router.post("/createUser", UserController.createUser  )
+router.get("/bookList", async function(req,res){
+    let data = req.body
+    let savedData = await BookModel.find().select({bookName:1,authorName:1,_id:0})
+    res.send({msg: savedData})
+})
 
-router.get("/getUsersData", UserController.getUsersData)
+router.get("/BooksInYear", async function(req,res){
 
-router.post("/createBook", BookController.createBook  )
+    let allBooksInYear = await BookModel.find({year:req.body.year})
+    res.send({msg: allBooksInYear})
+})
+router.get("/ParticularBooks", async function(req,res){
+    let allParticularBooks = await BookModel.find({'bookName':"drilling",'authorName':"gk"})
+    res.send({msg: allParticularBooks})
+})
+router.get("/XINRBooks", async function(req,res){
+    let allXINRBooks = await BookModel.find({'Price.indianPrice':{$in:["100INR","200INR","500INR"]}})
 
-router.get("/getBooksData", BookController.getBooksData)
+    res.send({msg:allXINRBooks})
+})
+
+router.get("/RandomBooks", async function(req,res){
+    let allRandomBooks = await BookModel.find({$or:[{stockAvailable:true},{totalpages:{$gt:900}}]})
+    res.send({msg: allRandomBooks})
+})
+
+
 
 module.exports = router;
