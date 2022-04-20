@@ -13,12 +13,14 @@ const createBook= async function (req, res) {
 
 
 
-const getBooksData = async function (req, res) {
-    let allBooks = await BookModel.find({ authorName: "HO" })
-    console.log(allBooks)
-    if (allBooks.length > 0) res.send({ msg: allBooks, condition: true })
-    else res.send({ msg: "No books found", condition: false })
-}
+//const getBooksData = async function (req, res) {
+  //  let allBooks = await BookModel.find({ authorName: "HO" })
+   // console.log(allBooks)
+   // if (allBooks.length > 0) res.send({ msg: allBooks, condition: true })
+   // else res.send({ msg: "No books found", condition: false })
+
+
+//}
 
 
 const updateBooks = async function (req, res) {
@@ -73,7 +75,7 @@ const totalSalesPerAuthor = async function (req, res) {
 
 
 module.exports.createBook = createBook
-module.exports.getBooksData = getBooksData
-module.exports.updateBooks = updateBooks
-module.exports.deleteBooks = deleteBooks
-module.exports.totalSalesPerAuthor = totalSalesPerAuthor
+//module.exports.getBooksData = getBooksData
+//module.exports.updateBooks = updateBooks
+//module.exports.deleteBooks = deleteBooks
+//module.exports.totalSalesPerAuthor = totalSalesPerAuthor
