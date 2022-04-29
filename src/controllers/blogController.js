@@ -158,14 +158,12 @@ const deleteBlog = async function (req, res) {
       return res.status(400).send({status : false, msg :"You are trying to perform an Unauthorized action"})
     }
            
-     let findBlog = await blogModel.findById(blog)
-
-     if(findBlog.isdeleted===true){
+  
+    if(blogFound.isdeleted===true){
       return res.status(404).send({status:false,msg:'this blog has been deleted by You'})
      }
 
-    let deletedBlog = await blogModel.findOneAndUpdate(
-      { _id: authorId },
+    let deletedBlog = await blogFound.update(
       { $set: { isdeleted: true }, deletedAt: Date.now() },
       { new: true }
     )
