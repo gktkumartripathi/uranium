@@ -34,7 +34,7 @@ const getBlogs = async function (req, res) {
   try {
     let data = req.query;
     let filter = {
-      isDeleted: false,
+      isdeleted: false,
       isPublished: true,
       ...data,
     };
@@ -49,7 +49,7 @@ const getBlogs = async function (req, res) {
     else {
       return res.status(200).send({ status: true, data: getSpecificBlogs });
     }
-} 
+  } 
     catch (error) {
     res.status(500).send({ status: false, err: error.message });
   }
@@ -64,7 +64,7 @@ const putBlog = async function (req, res) {
 
   try {
     let data = req.body
-
+    let authorId = req.query.authorId
     let id = req.params.blogId
     
     if(!id){ 
@@ -75,13 +75,17 @@ const putBlog = async function (req, res) {
       return res.status(400).send({status: false, msg: "Please provide a Valid blogId"})
     }
 
-    let xyz = await blogModel.findById(id)
-    
-    if(!xyz){
-        return res.status(400).send({status: false, msg : "No Blog with this Id exist"})
+    let blogFound = await blogModel.findOne({_id : id})
+
+    if(!blogFound){
+      return res.status(400).send({status: false, msg : "No Blog with this Id exist"})
     }
 
-    let updatedBlog = await blogModel.findOneAndUpdate({ _id: id }, { $set: data }, { new: true, upsert : true })
+    if(blogFound.authorId != authorId){
+      return res.status(400).send({status : false, msg :"You are trying to perform an Unauthorized action"})
+    }
+    
+    let updatedBlog = await blogModel.findOneAndUpdate({_id: id, authorId: authorId}, { $set: data }, { new: true, upsert : true })
 
     if (!updatedBlog) {
         return res.status(404).send({ msg: "we are not able to update it " })
@@ -103,6 +107,7 @@ const putBlog = async function (req, res) {
 const deleteBlog = async function (req, res) {
   try {
     let blog = req.params.blogId
+    let authorId = req.query.authorId
 
     
     if(!blog){
@@ -116,16 +121,21 @@ const deleteBlog = async function (req, res) {
     if (! await blogModel.findById(blog)) {
       return res.status(400).send({ status: false, msg: "No blog exists bearing this Blog Id, please provide another one" })
     }
+
+    let blogFound = await blogModel.findOne({_id : blog})
+
+    if(blogFound.authorId != authorId){
+      return res.status(400).send({status : false, msg :"You are trying to perform an Unauthorized action"})
+    }
            
      let findBlog = await blogModel.findById(blog)
 
      if(findBlog.isdeleted===true){
-
-      return res.status(404).send({status:false,msg:'this blog has been deleted by user'})
+      return res.status(404).send({status:false,msg:'this blog has been deleted by You'})
      }
 
     let deletedBlog = await blogModel.findOneAndUpdate(
-      { _id: blog },
+      { _id: authorId },
       { $set: { isdeleted: true }, deletedAt: Date.now() },
       { new: true }
     )
@@ -149,7 +159,7 @@ const blogByQuery = async (req, res) =>{
     if (Object.keys(data) == 0){    
       return res.status(400).send({ status: false, message: "No input provided" });
     }
-    
+
     const { category, subcategory, tags } = data
     
 
