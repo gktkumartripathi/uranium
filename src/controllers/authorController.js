@@ -10,7 +10,7 @@ const createAuthor = async function(req,res){
         if(!email){
             return res.status(400).send({status : false, msg : "Email must be present"})
         }
-        
+
         const verifyEmail =  validator.validate(email)
         if(!verifyEmail){
             return res.status(400).send({status:false,msg:'this is not a valid email'})
@@ -22,7 +22,7 @@ const createAuthor = async function(req,res){
 
         else{
             let authorCreated = await authorModel.create(requestData)
-            return  res.status(201).send({status : true, data : authorCreated})
+            return  res.status(201).send({status : true, msg : "You have successfully registered", data : authorCreated})
             }
         }
     catch(err){
@@ -57,7 +57,7 @@ const logInUser = async function (req, res){
          return res.status(400).send({status : false, msg: "Password is wrong"})
      } 
 
-      let secretKey = 'I thought i was smarter to do this-yet i did it anyway'
+      let secretKey = 'I thought i was too smarter to do this-yet i did it anyway'
       let token = jwt.sign({
          authorId : author._id,
          project : "blogging-site",

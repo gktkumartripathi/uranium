@@ -9,13 +9,6 @@ const createBlog = async function (req, res) {
     const {authorId, title, body, category, isPublished, tags, subcategory} = blog
 
     if (tags) {
-      if(typeof(tags)!=[String]){
-        return res.status(400).send({status : false, msg : "tags are not valid"})
-      }
-
-      if(tags.length === 0){
-        return res.status(400).send({status : false, msg : "tags can not be empty"})
-      }
 
       if (Array.isArray(tags)) {
         const uniqueTagArr = [...new Set(tags)];
@@ -24,13 +17,6 @@ const createBlog = async function (req, res) {
     }
 
     if (subcategory) {
-      if(typeof(subcategory)!=[String]){
-        return res.status(400).send({status : false, msg : "subcategory are not valid"})
-      }
-
-      if(subcategory.length === 0){
-        return res.status(400).send({status : false, msg : "subcategory can not be empty"})
-      }
 
       if (Array.isArray(subcategory)) {
         const uniqueSubcategoryArr = [...new Set(subcategory)];
@@ -39,9 +25,6 @@ const createBlog = async function (req, res) {
     }
 
     if (category) {
-      if(typeof(category)!=[String]){
-        return res.status(400).send({status : false, msg : "category is not valid"})
-      }
 
       if(category.length === 0){
         return res.status(400).send({status : false, msg : "category can not be empty"})
@@ -105,6 +88,7 @@ const getBlogs = async function (req, res) {
     const { category, subcategory, tags } = data
     
     if (category) {
+      
       let verifyCategory = await blogModel.findOne({ category: category })
       if (!verifyCategory) {
         return res.status(400).send({ status: false, msg: 'No blogs in this category exist' })
@@ -112,9 +96,6 @@ const getBlogs = async function (req, res) {
     }
 
     if (tags) {
-      if (typeof(tags)!==[String]) {
-        return res.status(400).send({ status: false, msg: 'this is not a valid tag' })
-      }
 
       if (!await blogModel.exists(tags)) {
         return res.status(400).send({ status: false, msg: 'no blog with this tags exist' })
@@ -122,9 +103,7 @@ const getBlogs = async function (req, res) {
     }
 
     if (subcategory) {
-      if (typeof(subcategory) !== [String]) {
-        return res.status(400).send({ status: false, msg: 'this is not a valid subcategory' })
-      }
+
 
       if (!await blogModel.exists(subcategory)) {
         return res.status(400).send({ status: false, msg: 'no blog with this subcategory exist' })
@@ -180,10 +159,10 @@ const putBlog = async function (req, res) {
     let updatedBlog = await blogModel.findOneAndUpdate({_id: id, authorId: authorId}, { $set: data }, { new: true, upsert : true })
 
     if (!updatedBlog) {
-        return res.status(404).send({ msg: "we are not able to update it " })
+        return res.status(404).send({ status : false, msg: "we are not able to update it " })
     }
     else{ 
-        return res.status(200).send({ status: false, data: updatedBlog })
+        return res.status(200).send({ status: true, data: updatedBlog })
     }
   }
   catch (error) {
@@ -257,6 +236,7 @@ const blogByQuery = async (req, res) =>{
     
 
     if (category) {
+
       let verifyCategory = await blogModel.findOne({ category: category })
       if (!verifyCategory) {
         return res.status(400).send({ status: false, msg: 'No blogs in this category exist' })
@@ -264,9 +244,6 @@ const blogByQuery = async (req, res) =>{
     }
 
     if (tags) {
-      if (typeof(tags)!==[String]) {
-        return res.status(400).send({ status: false, msg: 'this is not a valid tag' })
-      }
 
       if (!await blogModel.exists(tags)) {
         return res.status(400).send({ status: false, msg: 'no blog with this tags exist' })
@@ -274,10 +251,6 @@ const blogByQuery = async (req, res) =>{
     }
 
     if (subcategory) {
-      if (typeof(subcategory) !== [String]) {
-        return res.status(400).send({ status: false, msg: 'this is not a valid subcategory' })
-      }
-
       if (!await blogModel.exists(subcategory)) {
         return res.status(400).send({ status: false, msg: 'no blog with this subcategory exist' })
       }

@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken")
 const mongoose = require("mongoose")
-const secretKey = 'I thought i was smarter to do this-yet i did it anyway'
+const secretKey = 'I thought i was too smarter to do this-yet i did it anyway'
 
 const authorization = function (req,res,next){
     try{
