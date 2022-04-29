@@ -6,8 +6,12 @@ const createAuthor = async function(req,res){
     try{
         const requestData = req.body
         const {email} = requestData
-          const verifyEmail =  validator.validate(email)
-      
+        
+        if(!email){
+            return res.status(400).send({status : false, msg : "Email must be present"})
+        }
+        
+        const verifyEmail =  validator.validate(email)
         if(!verifyEmail){
             return res.status(400).send({status:false,msg:'this is not a valid email'})
             }

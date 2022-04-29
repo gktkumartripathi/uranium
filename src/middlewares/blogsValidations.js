@@ -25,23 +25,12 @@ exports.validateBlog = [
     .isLength({equal : 24})
     .withMessage('Author id must be 24 Characters long'),
 
-    check('tags')
-    .trim()
-    .not()
-    .isEmpty()
-    .withMessage('tags must be present'),
-
     check('category')
     .trim()
     .not()
     .isEmpty()
     .withMessage('Category must be present'),
 
-    check('subcategory')
-    .trim()
-    .not()
-    .isEmpty()
-    .withMessage('subcategory must be present'),
 
 ]
 

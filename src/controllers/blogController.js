@@ -4,9 +4,60 @@ const blogModel = require("../models/blogModel")
 
 const createBlog = async function (req, res) {
   try {
-    let blog = req.body;
+    const blog = req.body;
 
-    let blogCreated = await blogModel.create(blog);
+    const {authorId, title, body, category, isPublished, tags, subcategory} = blog
+
+    if (tags) {
+      if(typeof(tags)!=[String]){
+        return res.status(400).send({status : false, msg : "tags are not valid"})
+      }
+
+      if(tags.length === 0){
+        return res.status(400).send({status : false, msg : "tags can not be empty"})
+      }
+
+      if (Array.isArray(tags)) {
+        const uniqueTagArr = [...new Set(tags)];
+        blog["tags"] = uniqueTagArr; //Using array constructor here
+      }
+    }else{
+      return res.status(400).send({status : false, msg : "tags are not present"})
+    }
+
+
+    if (subcategory) {
+      if(typeof(subcategory)!=[String]){
+        return res.status(400).send({status : false, msg : "subcategory are not valid"})
+      }
+
+      if(subcategory.length === 0){
+        return res.status(400).send({status : false, msg : "subcategory can not be empty"})
+      }
+
+      if (Array.isArray(subcategory)) {
+        const uniqueSubcategoryArr = [...new Set(subcategory)];
+        blog["subcategory"] = uniqueSubcategoryArr; //Using array constructor here
+      }
+    }else{
+      return res.status(400).send({status : false, msg : "Subcategory is not present"})
+    }
+
+    if( await blogModel.exists(blog)){
+      return res.status(400).send({status: false, msg : "this blog already exists, try updating it"})
+    }
+
+    let blogData = {
+      authorId,
+      title,
+      body,
+      tags, 
+      category,
+      subcategory,
+      isPublished
+    }
+
+    let blogCreated = await blogModel.create(blogData);
 
     if (blog.isPublished === true) {
       let mainBlog = await blogModel.findOneAndUpdate(
@@ -14,9 +65,9 @@ const createBlog = async function (req, res) {
         { $set: { publishedAt: Date.now() } },
         { new: true, upsert: true }
       );
-      return res.status(201).send({ status: true, data: mainBlog })
+      return res.status(201).send({ status: true, msg : "You Blog has been Published", data: mainBlog })
     } else {
-      return res.status(201).send({ status: true, data: blogCreated })
+      return res.status(201).send({ status: true, msg : "You Blog has been Saved in drafts", data: blogCreated })
     }
 
   } catch (err) {
@@ -41,7 +92,6 @@ const getBlogs = async function (req, res) {
 
     const { category, subcategory, tags } = data
     
-
     if (category) {
       let verifyCategory = await blogModel.findOne({ category: category })
       if (!verifyCategory) {
@@ -169,7 +219,7 @@ const deleteBlog = async function (req, res) {
     )
 
     if (deletedBlog) {
-      res.status(200).send({ status: true, msg: "Your Blog has been successfully deleted", deletedData: deletedBlog })
+      return res.status(200).send({ status: true, msg: "Your Blog has been successfully deleted", deletedData: deletedBlog })
     }
 
   }
@@ -180,6 +230,9 @@ const deleteBlog = async function (req, res) {
 }
 
 
+
+
+
 const blogByQuery = async (req, res) =>{
   try {
     const data = req.query;
@@ -188,7 +241,7 @@ const blogByQuery = async (req, res) =>{
       return res.status(400).send({ status: false, message: "No input provided" });
     }
 
-    const { category, subcategory, tags } = data
+    const { authorId, category, subcategory, tags } = data
     
 
     if (category) {
@@ -218,7 +271,9 @@ const blogByQuery = async (req, res) =>{
       }
     }
 
-    const deleteByQuery = await blogModel.updateMany(data,{ isdeleted: true, deletedAt: new Date() },
+    let findBlog = await blogModel.find({authorId : authorId })
+
+    const deleteByQuery = await blogModel.updateMany(findBlog,{ isdeleted: true, deletedAt: new Date() },
       { new: true }               
     );
     if (!deleteByQuery){
