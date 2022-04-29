@@ -21,10 +21,7 @@ const createBlog = async function (req, res) {
         const uniqueTagArr = [...new Set(tags)];
         blog["tags"] = uniqueTagArr; //Using array constructor here
       }
-    }else{
-      return res.status(400).send({status : false, msg : "tags are not present"})
     }
-
 
     if (subcategory) {
       if(typeof(subcategory)!=[String]){
@@ -39,8 +36,23 @@ const createBlog = async function (req, res) {
         const uniqueSubcategoryArr = [...new Set(subcategory)];
         blog["subcategory"] = uniqueSubcategoryArr; //Using array constructor here
       }
+    }
+
+    if (category) {
+      if(typeof(category)!=[String]){
+        return res.status(400).send({status : false, msg : "category is not valid"})
+      }
+
+      if(category.length === 0){
+        return res.status(400).send({status : false, msg : "category can not be empty"})
+      }
+
+      if (Array.isArray(category)) {
+        const uniqueSubcategoryArr = [...new Set(category)];
+        blog["subcategory"] = uniqueSubcategoryArr; //Using array constructor here
+      }
     }else{
-      return res.status(400).send({status : false, msg : "Subcategory is not present"})
+      return res.status(400).send({status : false, msg : "Category is a required field" })
     }
 
     if( await blogModel.exists(blog)){
