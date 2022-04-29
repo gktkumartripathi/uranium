@@ -38,9 +38,9 @@ const createBlog = async function (req, res) {
       return res.status(400).send({status : false, msg : "Category is a required field" })
     }
 
-    if( await blogModel.exists(blog)){
-      return res.status(400).send({status: false, msg : "this blog already exists, try updating it"})
-    }
+    // if( await blogModel.exists(blog)){
+    //   return res.status(400).send({status: false, msg : "this blog already exists, try updating it"})
+    // }
 
     let blogData = {
       authorId,
@@ -103,7 +103,6 @@ const getBlogs = async function (req, res) {
     }
 
     if (subcategory) {
-
 
       if (!await blogModel.exists(subcategory)) {
         return res.status(400).send({ status: false, msg: 'no blog with this subcategory exist' })
