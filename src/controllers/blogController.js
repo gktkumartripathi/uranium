@@ -175,7 +175,7 @@ const blogByQuery = async (req, res) =>{
         return res.status(400).send({ status: false, msg: 'this is not a valid tag' })
       }
 
-      if (!await blogModel.exist(tags)) {
+      if (!await blogModel.exists(tags)) {
         return res.status(400).send({ status: false, msg: 'no blog with this tags exist' })
       }
     }
@@ -185,7 +185,7 @@ const blogByQuery = async (req, res) =>{
         return res.status(400).send({ status: false, msg: 'this is not a valid subcategory' })
       }
 
-      if (!await blogModel.exist(subcategory)) {
+      if (!await blogModel.exists(subcategory)) {
         return res.status(400).send({ status: false, msg: 'no blog with this subcategory exist' })
       }
     }
