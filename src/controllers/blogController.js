@@ -59,7 +59,7 @@ const createBlog = async function (req, res) {
 
     let blogCreated = await blogModel.create(blogData);
 
-    if (blog.isPublished === true) {
+    if (blogCreated.isPublished === true) {
       let mainBlog = await blogModel.findOneAndUpdate(
         { _id: blogCreated._id },
         { $set: { publishedAt: Date.now() } },
