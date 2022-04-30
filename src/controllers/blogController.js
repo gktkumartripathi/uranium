@@ -9,23 +9,43 @@ const createBlog = async function (req, res) {
 
     const {authorId, title, body, category, isPublished, tags, subcategory} = blog
 
+    let blogData = {
+      authorId,
+      title,
+      body,
+      category,
+      isPublished
+    }
+
     if (tags) {
+
+      if(typeof(tags)!= Object){
+        return res.status(400).send({status : false, msg : 'tags are not valid'})
+      }
 
       if (Array.isArray(tags)) {
         const uniqueTagArr = [...new Set(tags)];
-        blog["tags"] = uniqueTagArr; //Using array constructor here
+        blogData["tags"] = uniqueTagArr; //Using array constructor here
       }
     }
 
     if (subcategory) {
 
+      if(typeof(subcategory)!= Object){
+        return res.status(400).send({status : false, msg : 'subcategor is not valid'})
+      }
+
       if (Array.isArray(subcategory)) {
         const uniqueSubcategoryArr = [...new Set(subcategory)];
-        blog["subcategory"] = uniqueSubcategoryArr; //Using array constructor here
+        blogData["subcategory"] = uniqueSubcategoryArr; //Using array constructor here
       }
     }
 
     if (category) {
+      
+      if(typeof(category)!= Object){
+        return res.status(400).send({status : false, msg : 'category is not valid'})
+      }
 
       if(category.length === 0){
         return res.status(400).send({status : false, msg : "category can not be empty"})
@@ -33,21 +53,10 @@ const createBlog = async function (req, res) {
 
       if (Array.isArray(category)) {
         const uniqueSubcategoryArr = [...new Set(category)];
-        blog["subcategory"] = uniqueSubcategoryArr; //Using array constructor here
+        blogData["subcategory"] = uniqueSubcategoryArr; //Using array constructor here
       }
     }else{
       return res.status(400).send({status : false, msg : "Category is a required field" })
-    }
-
-
-    let blogData = {
-      authorId,
-      title,
-      body,
-      tags, 
-      category,
-      subcategory,
-      isPublished
     }
 
     let findBlog = await blogModel.findOne({blogData})
@@ -56,7 +65,6 @@ const createBlog = async function (req, res) {
       return res.status(400).send({status: false, msg : "this blog already exists, try updating it"})
     }
     
-
     let blogCreated = await blogModel.create(blogData);
 
     if (blogCreated.isPublished === true) {
