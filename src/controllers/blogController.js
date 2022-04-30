@@ -1,3 +1,4 @@
+const { response } = require("express");
 const { default: mongoose } = require("mongoose")
 const blogModel = require("../models/blogModel")
 
@@ -92,7 +93,6 @@ const getBlogs = async function (req, res) {
     const { category, subcategory, tags } = data
     
     if (category) {
-      
       let verifyCategory = await blogModel.findOne({ category: category })
       if (!verifyCategory) {
         return res.status(400).send({ status: false, msg: 'No blogs in this category exist' })
@@ -148,6 +148,27 @@ const putBlog = async function (req, res) {
     if(!mongoose.isValidObjectId(id)){
       return res.status(400).send({status: false, msg: "Please provide a Valid blogId"})
     }
+    
+    let {tags, category, subcategory} = data
+
+    if(tags){
+      if(! Array.isArray(tags)){
+        return res.status(400).send({status : false, msg : "input tags must be an Array"})
+      }
+    }
+
+    if(category){
+      if(! Array.isArray(category)){
+        return res.status(400).send({status : false, msg : "input category must be an Array"})
+      }
+    }
+
+    if(subcategory){
+      if(! Array.isArray(subcategory)){
+        return res.status(400).send({status : false, msg : "input subcategory must be an Array"})
+      }
+    }
+
 
     let blogFound = await blogModel.findOne({_id : id})
 
@@ -239,7 +260,6 @@ const blogByQuery = async (req, res) =>{
     
 
     if (category) {
-
       let verifyCategory = await blogModel.findOne({ category: category })
       if (!verifyCategory) {
         return res.status(400).send({ status: false, msg: 'No blogs in this category exist' })
@@ -259,11 +279,16 @@ const blogByQuery = async (req, res) =>{
       }
     }
 
-    let findBlog = await blogModel.find({authorId : authorId })
+    let findBlog = await blogModel.find({...data, isdeleted : false, authorId : authorId })
+    
+    if(!findBlog){
+      return res.status(400).send({status : false, msg : "no blogs are present with this query"})
+    }
 
     const deleteByQuery = await blogModel.updateMany(findBlog,{ isdeleted: true, deletedAt: new Date() },
       { new: true }               
     );
+
     if (!deleteByQuery){
       return res.status(404).send({ status: false, message: "No such blog found" });
     } 
