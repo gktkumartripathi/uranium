@@ -19,10 +19,6 @@ const createBlog = async function (req, res) {
 
     if (tags) {
 
-      if(typeof(tags)!= Object){
-        return res.status(400).send({status : false, msg : 'tags are not valid'})
-      }
-
       if (Array.isArray(tags)) {
         const uniqueTagArr = [...new Set(tags)];
         blogData["tags"] = uniqueTagArr; //Using array constructor here
@@ -31,10 +27,6 @@ const createBlog = async function (req, res) {
 
     if (subcategory) {
 
-      if(typeof(subcategory)!= Object){
-        return res.status(400).send({status : false, msg : 'subcategory is not valid'})
-      }
-
       if (Array.isArray(subcategory)) {
         const uniqueSubcategoryArr = [...new Set(subcategory)];
         blogData["subcategory"] = uniqueSubcategoryArr; //Using array constructor here
@@ -42,10 +34,6 @@ const createBlog = async function (req, res) {
     }
 
     if (category) {
-      
-      if(typeof(category)!= Object){
-        return res.status(400).send({status : false, msg : 'category is not valid'})
-      }
 
       if(category.length === 0){
         return res.status(400).send({status : false, msg : "category can not be empty"})
