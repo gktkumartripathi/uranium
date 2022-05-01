@@ -13,7 +13,9 @@ const createBlog = async function (req, res) {
       authorId,
       title,
       body,
+      tags,
       category,
+      subcategory,
       isPublished
     }
 
