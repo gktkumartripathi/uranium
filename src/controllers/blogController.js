@@ -41,7 +41,7 @@ const createBlog = async function (req, res) {
 
       if (Array.isArray(category)) {
         const uniqueSubcategoryArr = [...new Set(category)];
-        blogData["subcategory"] = uniqueSubcategoryArr; //Using array constructor here
+        blogData["category"] = uniqueSubcategoryArr; //Using array constructor here
       }
     }else{
       return res.status(400).send({status : false, msg : "Category is a required field" })
